@@ -1,6 +1,6 @@
 {
     "name": "Nodistract",
-    "description": "Приложение, позволяющее скрывать и блокировать объекты, отвлекающие внимание.",
+    "description": "An application that allows you to hide and block objects that distract attention.",
     "version": "0.1.0",
     "manifest_version": 2,
     "icons": {
@@ -9,9 +9,14 @@
         "48": "./images/icons/icon48x48.png",
         "128": "./images/icons/icon128x128.png"
     },
-    "background": {
-        "scripts": ["./background.js"]
-    },
+    "background": { "scripts": ["background.js"], "persistent": true },
+    "content_scripts": [
+        {
+            "matches": ["<all_urls>"],
+            "js": ["scripts/jquery.js", "content.js"],
+            "css": ["styles/content.css"]
+        }
+    ],
     "options_page": "./options.html",
     "browser_action": {
         "default_popup": "popup.html"
