@@ -15,6 +15,7 @@ $('documet').ready(function() {
                 chrome.runtime.sendMessage({
                     toogle_active_mode: checked
                 })
+                
             }
         });
       }); 
