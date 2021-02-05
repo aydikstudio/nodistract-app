@@ -1,6 +1,7 @@
 $('documet').ready(function() {
-
-    chrome.storage.sync.get(['toogle_active_mode_status'], function(result) {
+    let url = document.location.href;
+    
+    chrome.storage.local.get(['toogle_active_mode_status'], function(result) {
         if(result.toogle_active_mode_status) {
             $('#switch-to-mode').attr('checked', 'checked');
         } else {
