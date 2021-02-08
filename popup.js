@@ -51,10 +51,10 @@ $("documet").ready(function () {
   });
 
   chrome.storage.local.get(["toogle_active_mode_status"], function (result) {
-    console.log(result);
     new DG.OnOffSwitch({
       el: "#switch-to-mode",
       textOn: "YES",
+      checked: result.toogle_active_mode_status,
       textOff: "ON",
       listener: function (name, checked) {
         chrome.runtime.sendMessage({
@@ -63,14 +63,6 @@ $("documet").ready(function () {
         refresh();
       },
     });
-
-    if (result.toogle_active_mode_status) {
-      $("#switch-to-mode").attr("checked");
-    } else {
-      $("#switch-to-mode").removeAttr("checked");
-    }
-
-    
   });
 
   function refresh() {
@@ -78,5 +70,13 @@ $("documet").ready(function () {
       var code = "window.location.reload();";
       chrome.tabs.executeScript(tab.id, { code: code });
     });
+  }
+
+  function statusCheckbox(status) {
+    if (status) {
+      $("#switch-to-mode").attr("checked");
+    } else {
+      $("#switch-to-mode").removeAttr("checked");
+    }
   }
 });

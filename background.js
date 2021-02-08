@@ -1,11 +1,7 @@
-chrome.browserAction.onClicked.addListener(function (tab) {
-   alert('OK')
- });
-
 
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-  if (request.toogle_active_mode) {
+  if (request.toogle_active_mode == true || request.toogle_active_mode == false) {
     chrome.storage.local.set({
       toogle_active_mode_status: request.toogle_active_mode
     });
