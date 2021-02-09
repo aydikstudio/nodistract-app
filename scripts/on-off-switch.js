@@ -43,8 +43,6 @@ $.extend(DG.OnOffSwitch.prototype, {
     listener: undefined,
     trackBorderColor: undefined,
 
-    checked: false,
-
     width: 0,
     height: 30,
 

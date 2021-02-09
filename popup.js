@@ -5,13 +5,17 @@ $("documet").ready(function () {
   chrome.tabs.query(
     { active: true, windowId: chrome.windows.WINDOW_ID_CURRENT },
     function (tabs) {
+      
       url = tabs[0].url;
       url_main_item = tabs[0].url.split("/");
       url_main = url_main_item[0] + "//" + url_main_item[1] + url_main_item[2];
+      if (url_main.slice(-1) == "/") {
+        url_main = url.substring(0, url.length - 1);
+      }
     }
   );
   chrome.storage.local.get(["forbid"], function (result) {
-    if (result.forbid.find((item) => url)) {
+    if (result.forbid.find((item) => item == url_main)) {
       $("#forbid_allow").text("allow");
       $("#forbid_allow").css("color", "green");
     } else {
@@ -72,11 +76,4 @@ $("documet").ready(function () {
     });
   }
 
-  function statusCheckbox(status) {
-    if (status) {
-      $("#switch-to-mode").attr("checked");
-    } else {
-      $("#switch-to-mode").removeAttr("checked");
-    }
-  }
 });
