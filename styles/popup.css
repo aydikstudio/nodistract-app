@@ -1,0 +1,26 @@
+
+
+#app-cover {
+    width: 150px;
+    height: 70px;
+    padding: 20px;
+    margin: 0 0 0 30px;
+}
+
+
+#forbid_allow {
+    color: red;
+    position: relative;
+    bottom: 2px;
+    font-size: 15px;
+    text-decoration: red;
+}
+
+#clear_store {
+    color: black;
+    position: relative;
+    bottom: 2px;
+    left: 10px;
+    font-size: 15px;
+    text-decoration: red;
+}

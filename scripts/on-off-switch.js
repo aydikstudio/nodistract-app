@@ -5,7 +5,7 @@ if (!DG)var DG = {};
 
 
 DG.switches = {};
-DG.OnOffSwitchProperties = ["textOn", "textOff", "width", "height", "trackColorOn", "trackColorOff",
+DG.OnOffSwitchProperties = ["textOn", "checked", "textOff", "width", "height", "trackColorOn", "trackColorOff",
     "textColorOn", "textColorOff", "listener", "trackBorderColor", "textSizeRatio"];
 DG.OnOffSwitch = function (config) {
     if (config.el != undefined) {
@@ -43,14 +43,13 @@ $.extend(DG.OnOffSwitch.prototype, {
     listener: undefined,
     trackBorderColor: undefined,
 
-    checked: false,
-
     width: 0,
     height: 30,
 
     trackBorderWidth: 1,
 
     textSizeRatio: 0.40,
+    checked: false,
 
     trackColorOn: undefined,
     trackColorOff: '#EEE',
@@ -237,6 +236,10 @@ $.extend(DG.OnOffSwitch.prototype, {
         }
         if (this.trackColorOn) {
             this.trackOn.css("background-color", this.trackColorOn);
+        }
+
+        if (this.checked) {
+            this.trackOn.attr("checked", this.checked);
         }
 
         this.el.append(this.thumb);
