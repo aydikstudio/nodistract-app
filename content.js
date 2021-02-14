@@ -8,6 +8,24 @@ if (url.slice(-1) == "/") {
 url_main_item = url.split("/");
 url_main = url_main_item[0] + "//" + url_main_item[1] + url_main_item[2];
 
+let obj = {};
+
+chrome.storage.local.get(["url_block"], function (result) {
+  obj = result.url_block.find(
+    (item) => item.url == url
+  ) || {};
+
+  if (obj.hasOwnProperty('arr')) {
+    if (obj.arr.length > 0) {
+      obj.arr.forEach(function(item) {
+        console.log(item);
+        $(item).wrap("block_distact").css("position", "relative");
+        $(item).addClass("block_hide");
+      });
+    }
+  }
+});
+
 chrome.storage.local.get(["forbid"], function (result) {
   if (result.forbid.find((item) => item == url_main)) {
     status_block = false;
@@ -42,7 +60,7 @@ $("documet").ready(function () {
               let obj_item = obj.attr("id").split(" ");
               let obj_item_new = [];
               $.each(obj_item, function (index, value) {
-                obj_item_new.push("." + value + " ");
+                obj_item_new.push("#" + value + " ");
               });
               obj_string = obj_item_new.join().replace(/,/g, "");
               if (obj.hasClass("block_hide")) {

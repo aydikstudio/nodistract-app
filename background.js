@@ -44,52 +44,61 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
   if (request.block_site) {
     if (request.block_site.act == "delete") {
+      console.log("delete");
       let all_url = [];
       let array_banned_blocks_sites = {
         url: "",
         arr: [],
       };
       chrome.storage.local.get(["url_block"], function (result) {
-        all_url = result;
-        if (result.length > 0) {
-          for (let url_item of Object.keys(result.url)) {
-            if (
-              result.block_site.url.find(
-                (item) => item == request.block_site.obj
-              )
-            ) {
-              array_banned_blocks_sites.arr.push(url_item);
-            }
+        all_url =
+          result.url_block.filter(
+            (item) => item.url != request.block_site.url
+          ) || [];
+        obj =
+          result.url_block.find((item) => item.url == request.block_site.url) ||
+          {};
 
-            array_banned_blocks_sites.url = request.block_site.url;
+        if (obj.hasOwnProperty("arr")) {
+          if (obj.arr.length > 0) {
+            obj.arr.forEach(function (item) {
+              if (item != obj.obj) {
+                array_banned_blocks_sites.arr.push(item);
+              }
+            });
           }
         }
-      });
-      console.log([...all_url, array_banned_blocks_sites]);
 
-      chrome.storage.local.set({
-        url_block: [...all_url, array_banned_blocks_sites],
+        if(array_banned_blocks_sites.arr.length > 0) {
+          save(all_url, array_banned_blocks_sites);
+        } else {
+          save(all_url, 0);
+        }
       });
     }
 
     if (request.block_site.act == "add") {
+      let obj = {};
       let all_url = [];
       let array_banned_blocks_sites = {
         url: request.block_site.url,
         arr: [],
       };
       chrome.storage.local.get(["url_block"], function (result) {
-        all_url = result.url_block.filter(
-          (item) => item.url != request.block_site.url
-        );
-        let obj = result.url_block.find(
-          (item) => item.url == request.block_site.url
-        );
+        console.log(result);
+        all_url =
+          result.url_block.filter(
+            (item) => item.url != request.block_site.url
+          ) || [];
+        obj =
+          result.url_block.find((item) => item.url == request.block_site.url) ||
+          {};
 
-        if (obj.arr.length > 0) {
-          for (let url_item of Object.keys(obj.arr)) {
-            console.log(url_item)
-            array_banned_blocks_sites.arr.push(url_item);
+        if (obj.hasOwnProperty("arr")) {
+          if (obj.arr.length > 0) {
+            obj.arr.forEach(function (item) {
+              array_banned_blocks_sites.arr.push(item);
+            });
           }
         }
         array_banned_blocks_sites.arr.push(request.block_site.obj);
@@ -99,10 +108,14 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   }
 
   function save(all_url, arr) {
-    // console.log(all_url);
-    // console.log(arr);
+    if(arr != 0) {
     chrome.storage.local.set({
       url_block: [...all_url, arr],
+    });       
+  } else {
+    chrome.storage.local.set({
+      url_block: [...all_url],
     });
+  }
   }
 });
