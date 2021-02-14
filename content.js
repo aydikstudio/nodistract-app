@@ -32,15 +32,17 @@ $("documet").ready(function () {
       }
     });
 
+    
+    blockChoosed();
+
+    setInterval(() => {
+      blockChoosed();
+    }, 5000);
+
     chrome.storage.local.get(["toogle_active_mode_status"], function (result) {
       let status = result.toogle_active_mode_status;
       if (status) {
 
-        blockChoosed();
-
-        setInterval(() => {
-          blockChoosed();
-        }, 5000);
         
         $("a").each(function () {
           $(this).removeAttr("href");
