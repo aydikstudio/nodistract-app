@@ -44,7 +44,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
   if (request.block_site) {
     if (request.block_site.act == "delete") {
-      console.log("delete");
       let all_url = [];
       let array_banned_blocks_sites = {
         url: "",
@@ -85,7 +84,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         arr: [],
       };
       chrome.storage.local.get(["url_block"], function (result) {
-        console.log(result);
         all_url =
           result.url_block.filter(
             (item) => item.url != request.block_site.url
@@ -97,7 +95,9 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         if (obj.hasOwnProperty("arr")) {
           if (obj.arr.length > 0) {
             obj.arr.forEach(function (item) {
-              array_banned_blocks_sites.arr.push(item);
+              if(item != request.block_site.obj) {
+              array_banned_blocks_sites.arr.push(item);                  
+            }
             });
           }
         }

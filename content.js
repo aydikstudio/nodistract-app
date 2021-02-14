@@ -10,21 +10,7 @@ url_main = url_main_item[0] + "//" + url_main_item[1] + url_main_item[2];
 
 let obj = {};
 
-chrome.storage.local.get(["url_block"], function (result) {
-  obj = result.url_block.find(
-    (item) => item.url == url
-  ) || {};
-
-  if (obj.hasOwnProperty('arr')) {
-    if (obj.arr.length > 0) {
-      obj.arr.forEach(function(item) {
-        console.log(item);
-        $(item).wrap("block_distact").css("position", "relative");
-        $(item).addClass("block_hide");
-      });
-    }
-  }
-});
+// setTimeout($('.grid__ccol .i-pull-left .svelte-184u571 ').hide(), 5000)
 
 chrome.storage.local.get(["forbid"], function (result) {
   if (result.forbid.find((item) => item == url_main)) {
@@ -36,7 +22,7 @@ chrome.storage.local.get(["forbid"], function (result) {
 });
 
 $("documet").ready(function () {
-  if (true) {
+  if (status_block) {
     chrome.storage.local.get([url], function (result) {
       if (result) {
         $(result).each(function (key, value) {
@@ -48,7 +34,14 @@ $("documet").ready(function () {
 
     chrome.storage.local.get(["toogle_active_mode_status"], function (result) {
       let status = result.toogle_active_mode_status;
-      if (true) {
+      if (status) {
+
+        blockChoosed();
+
+        setInterval(() => {
+          blockChoosed();
+        }, 5000);
+        
         $("a").each(function () {
           $(this).removeAttr("href");
         });
@@ -62,25 +55,41 @@ $("documet").ready(function () {
               $.each(obj_item, function (index, value) {
                 obj_item_new.push("#" + value + " ");
               });
-              obj_string = obj_item_new.join().replace(/,/g, "");
-              if (obj.hasClass("block_hide")) {
-                chrome.storage.local.get(["url_block"], function (result) {
-                  let arr = [];
-                  arr = result.filter(function (item, index) {
-                    return item != obj.attr("id");
-                  });
+              obj_string = obj_item_new
+                .join()
+                .replace(/,/g, "")
+                .replace(/\s*$/, "");
 
-                  saveBannedUrl(url,  obj_string, 'delete');
-                });
+                if (obj.attr("class")) {
+                  let obj_string1 = "";
+                  let obj_item1 = obj.attr("class").split(" ");
+                  let obj_item_new1 = [];
+                  $.each(obj_item1, function (index, value) {
+                    obj_item_new1.push("." + value + " ");
+                  });
+                  obj_string1 = obj_item_new1
+                    .join()
+                    .replace(/,/g, "")
+                    .replace(".block_hover", "")
+                    .replace(/\s*$/, "");
+                  if (obj.hasClass("block_hide")) {
+                    saveBannedUrl(url, obj_string1, "delete");
+                  } else {
+                    saveBannedUrl(url, obj_string1, "add");
+                  }
+                }
+
+              if (obj.hasClass("block_hide")) {
+                saveBannedUrl(url, obj_string, "delete");
                 obj.parent("block_distact").css("position", "");
                 obj.removeClass("block_hide");
               } else {
-                chrome.storage.local.get(["url_block"], function (result) {
-                  saveBannedUrl(url,  obj_string, 'add');
-                });
+                saveBannedUrl(url, obj_string, "add");
                 obj.wrap("block_distact").css("position", "relative");
                 obj.addClass("block_hide");
-              }
+                }
+
+
             } else if (obj.attr("class")) {
               let obj_string = "";
               let obj_item = obj.attr("class").split(" ");
@@ -88,21 +97,17 @@ $("documet").ready(function () {
               $.each(obj_item, function (index, value) {
                 obj_item_new.push("." + value + " ");
               });
-              obj_string = obj_item_new.join().replace(/,/g, "").replace('.block_hover','');
+              obj_string = obj_item_new
+                .join()
+                .replace(/,/g, "")
+                .replace(".block_hover", "")
+                .replace(/\s*$/, "");
               if (obj.hasClass("block_hide")) {
-                chrome.storage.local.get(["url_block"], function (result) {
-                  let arr = [];
-                  arr = result.filter(function (item, index) {
-                    return item != obj_string;
-                  });
-                  saveBannedUrl(url,  obj_string, 'delete');
-                });
+                saveBannedUrl(url, obj_string, "delete");
                 obj.parent("block_distact").css("position", "");
                 obj.removeClass("block_hide");
               } else {
-                chrome.storage.local.get(["url_block"], function (result) {
-                  saveBannedUrl(url,  obj_string, 'add');
-                });
+                saveBannedUrl(url, obj_string, "add");
                 obj.wrap("block_distact").css("position", "relative");
                 obj.addClass("block_hide");
               }
@@ -135,16 +140,43 @@ $("documet").ready(function () {
       }
     });
 
-
-
     function saveBannedUrl(url, obj, act) {
       chrome.runtime.sendMessage({
         block_site: {
           url,
           obj,
-          act
+          act,
+        },
+      });
+    }
+
+    function blockChoosed() {
+      chrome.storage.local.get(["url_block"], function (result) {
+        obj = result.url_block.find((item) => item.url == url) || {};
+
+        if (obj.hasOwnProperty("arr")) {
+          if (obj.arr.length > 0) {
+            obj.arr.forEach(function (item) {
+              if (item[0] == ".") {
+                $("[class='" + item.split(".").join("") + "']")
+                  .wrap("block_distact")
+                  .css("position", "relative");
+                $("[class='" + item.split(".").join("") + "']").addClass(
+                  "block_hide"
+                );
+              } else if (item[0] == "#") {
+                $("[id='" + item.split("#").join("") + "']")
+                  .wrap("block_distact")
+                  .css("position", "relative");
+                $("[id='" + item.split("#").join("") + "']").addClass(
+                  "block_hide"
+                );
+              }
+            });
+          }
         }
       });
     }
   }
+
 });
