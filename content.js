@@ -32,18 +32,15 @@ $("documet").ready(function () {
       }
     });
 
-    
-    blockChoosed();
-
-    setInterval(() => {
-      blockChoosed();
-    }, 5000);
-
     chrome.storage.local.get(["toogle_active_mode_status"], function (result) {
       let status = result.toogle_active_mode_status;
       if (status) {
+        blockChoosed("edit");
+      } else {
+        blockChoosed("show");
+      }
 
-        
+      if (status) {
         $("a").each(function () {
           $(this).removeAttr("href");
         });
@@ -62,24 +59,24 @@ $("documet").ready(function () {
                 .replace(/,/g, "")
                 .replace(/\s*$/, "");
 
-                if (obj.attr("class")) {
-                  let obj_string1 = "";
-                  let obj_item1 = obj.attr("class").split(" ");
-                  let obj_item_new1 = [];
-                  $.each(obj_item1, function (index, value) {
-                    obj_item_new1.push("." + value + " ");
-                  });
-                  obj_string1 = obj_item_new1
-                    .join()
-                    .replace(/,/g, "")
-                    .replace(".block_hover", "")
-                    .replace(/\s*$/, "");
-                  if (obj.hasClass("block_hide")) {
-                    saveBannedUrl(url, obj_string1, "delete");
-                  } else {
-                    saveBannedUrl(url, obj_string1, "add");
-                  }
+              if (obj.attr("class")) {
+                let obj_string1 = "";
+                let obj_item1 = obj.attr("class").split(" ");
+                let obj_item_new1 = [];
+                $.each(obj_item1, function (index, value) {
+                  obj_item_new1.push("." + value + " ");
+                });
+                obj_string1 = obj_item_new1
+                  .join()
+                  .replace(/,/g, "")
+                  .replace(".block_hover", "")
+                  .replace(/\s*$/, "");
+                if (obj.hasClass("block_hide")) {
+                  saveBannedUrl(url, obj_string1, "delete");
+                } else {
+                  saveBannedUrl(url, obj_string1, "add");
                 }
+              }
 
               if (obj.hasClass("block_hide")) {
                 saveBannedUrl(url, obj_string, "delete");
@@ -89,9 +86,7 @@ $("documet").ready(function () {
                 saveBannedUrl(url, obj_string, "add");
                 obj.wrap("block_distact").css("position", "relative");
                 obj.addClass("block_hide");
-                }
-
-
+              }
             } else if (obj.attr("class")) {
               let obj_string = "";
               let obj_item = obj.attr("class").split(" ");
@@ -152,7 +147,7 @@ $("documet").ready(function () {
       });
     }
 
-    function blockChoosed() {
+    function blockChoosed(status) {
       chrome.storage.local.get(["url_block"], function (result) {
         obj = result.url_block.find((item) => item.url == url) || {};
 
@@ -178,7 +173,18 @@ $("documet").ready(function () {
           }
         }
       });
+
+      if (status == "edit") {
+        setTimeout(() => {
+          blockChoosed();
+        }, 5000);
+      }
+
+      if (status == "show") {
+        setInterval(() => {
+          blockChoosed();
+        }, 1000);
+      }
     }
   }
-
 });

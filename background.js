@@ -1,3 +1,29 @@
+chrome.storage.local.get(["forbid"], function(result) {
+  if(Object.keys(result).length == 0) {
+    console.log('ok');
+    createStore('forbid', 'array')
+  }
+})
+
+
+chrome.storage.local.get(["toogle_active_mode_status"], function(result) {
+  if(Object.keys(result).length == 0) {
+    console.log('ok1');
+    createStore('toogle_active_mode_status', 'string')
+  }
+})
+
+
+chrome.storage.local.get(["url_block"], function(result) {
+  if(Object.keys(result).length == 0) {
+    console.log('ok2');
+    createStore('url_block', 'array')
+  }
+})
+
+
+
+
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (
     request.toogle_active_mode == true ||
@@ -118,4 +144,27 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     });
   }
   }
+
+  
 });
+
+
+
+function createStore(val, type) {
+  if(type == 'array') {
+    if(val == 'forbid') {
+      chrome.storage.local.set({ forbid: [] });
+    }
+
+    if(val == 'url_block') {
+      chrome.storage.local.set({ url_block: [] });
+    }
+  }
+
+  if(type == 'string') {
+    if(val == 'toogle_active_mode_status') {
+    chrome.storage.local.set({ toogle_active_mode_status: false });
+    }
+  }
+ 
+}
