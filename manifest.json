@@ -1,7 +1,7 @@
 {
     "name": "Nodistract",
     "description": "An application that allows you to hide and block objects that distract attention.",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "manifest_version": 2,
     "icons": {
         "128": "logo128x128.png"

@@ -1,4 +1,5 @@
 let url = document.location.href.split("?")[0];
+
 let url_main = "";
 let status_block;
 if (url.slice(-1) == "/") {
@@ -9,8 +10,6 @@ url_main_item = url.split("/");
 url_main = url_main_item[0] + "//" + url_main_item[1] + url_main_item[2];
 
 let obj = {};
-
-// setTimeout($('.grid__ccol .i-pull-left .svelte-184u571 ').hide(), 5000)
 
 chrome.storage.local.get(["forbid"], function (result) {
   if (result.forbid.find((item) => item == url_main)) {
@@ -26,7 +25,7 @@ $("documet").ready(function () {
     chrome.storage.local.get([url], function (result) {
       if (result) {
         $(result).each(function (key, value) {
-          value.wrap("block_distact").css("position", "relative");
+          value.parent("block_distact").css("position", "");
           value.addClass("block_hide");
         });
       }
@@ -34,6 +33,7 @@ $("documet").ready(function () {
 
     chrome.storage.local.get(["toogle_active_mode_status"], function (result) {
       let status = result.toogle_active_mode_status;
+
       if (status) {
         blockChoosed("edit");
       } else {
@@ -141,38 +141,48 @@ $("documet").ready(function () {
       chrome.runtime.sendMessage({
         block_site: {
           url,
-          obj,
+          obj: obj.replace(".block_hide", ""),
           act,
         },
       });
     }
 
     function blockChoosed(status) {
-      chrome.storage.local.get(["url_block"], function (result) {
-        obj = result.url_block.find((item) => item.url == url) || {};
+      let newurl = document.location.href.split("?")[0];
+      if (newurl.slice(-1) == "/") {
+        newurl = newurl.substring(0, newurl.length - 1);
+      }
 
-        if (obj.hasOwnProperty("arr")) {
-          if (obj.arr.length > 0) {
-            obj.arr.forEach(function (item) {
-              if (item[0] == ".") {
-                $("[class='" + item.split(".").join("") + "']")
-                  .wrap("block_distact")
-                  .css("position", "relative");
-                $("[class='" + item.split(".").join("") + "']").addClass(
-                  "block_hide"
-                );
-              } else if (item[0] == "#") {
-                $("[id='" + item.split("#").join("") + "']")
-                  .wrap("block_distact")
-                  .css("position", "relative");
-                $("[id='" + item.split("#").join("") + "']").addClass(
-                  "block_hide"
-                );
-              }
-            });
+      if (url == newurl) {
+        chrome.storage.local.get(["url_block"], function (result) {
+          obj = result.url_block.find((item) => item.url == url) || {};
+
+          if (obj.hasOwnProperty("arr")) {
+            if (obj.arr.length > 0) {
+              obj.arr.forEach(function (item) {
+                if (item[0] == ".") {
+                  $("[class='" + item.split(".").join("") + "']")
+                    .wrap("block_distact")
+                    .css("position", "relative");
+                  $("[class='" + item.split(".").join("") + "']").addClass(
+                    "block_hide"
+                  );
+                } else if (item[0] == "#") {
+                  $("[id='" + item.split("#").join("") + "']")
+                    .wrap("block_distact")
+                    .css("position", "relative");
+                  $("[id='" + item.split("#").join("") + "']").addClass(
+                    "block_hide"
+                  );
+                }
+              });
+            }
           }
-        }
-      });
+        });
+      } else {
+        $(".block_hide").removeClass("block_hide");
+        url = newurl;
+      }
 
       if (status == "edit") {
         setTimeout(() => {
@@ -183,7 +193,7 @@ $("documet").ready(function () {
       if (status == "show") {
         setInterval(() => {
           blockChoosed();
-        }, 1000);
+        }, 500);
       }
     }
   }

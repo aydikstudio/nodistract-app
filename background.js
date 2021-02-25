@@ -1,28 +1,20 @@
-chrome.storage.local.get(["forbid"], function(result) {
-  if(Object.keys(result).length == 0) {
-    console.log('ok');
-    createStore('forbid', 'array')
+chrome.storage.local.get(["forbid"], function (result) {
+  if (Object.keys(result).length == 0) {
+    createStore("forbid", "array");
   }
-})
+});
 
-
-chrome.storage.local.get(["toogle_active_mode_status"], function(result) {
-  if(Object.keys(result).length == 0) {
-    console.log('ok1');
-    createStore('toogle_active_mode_status', 'string')
+chrome.storage.local.get(["toogle_active_mode_status"], function (result) {
+  if (Object.keys(result).length == 0) {
+    createStore("toogle_active_mode_status", "string");
   }
-})
+});
 
-
-chrome.storage.local.get(["url_block"], function(result) {
-  if(Object.keys(result).length == 0) {
-    console.log('ok2');
-    createStore('url_block', 'array')
+chrome.storage.local.get(["url_block"], function (result) {
+  if (Object.keys(result).length == 0) {
+    createStore("url_block", "array");
   }
-})
-
-
-
+});
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (
@@ -72,7 +64,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (request.block_site.act == "delete") {
       let all_url = [];
       let array_banned_blocks_sites = {
-        url: "",
+        url: request.block_site.url,
         arr: [],
       };
       chrome.storage.local.get(["url_block"], function (result) {
@@ -87,14 +79,14 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         if (obj.hasOwnProperty("arr")) {
           if (obj.arr.length > 0) {
             obj.arr.forEach(function (item) {
-              if (item != obj.obj) {
+              if (item != request.block_site.obj.replace(/\s*$/, "")) {
                 array_banned_blocks_sites.arr.push(item);
               }
             });
           }
         }
 
-        if(array_banned_blocks_sites.arr.length > 0) {
+        if (array_banned_blocks_sites.arr.length > 0) {
           save(all_url, array_banned_blocks_sites);
         } else {
           save(all_url, 0);
@@ -121,9 +113,9 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         if (obj.hasOwnProperty("arr")) {
           if (obj.arr.length > 0) {
             obj.arr.forEach(function (item) {
-              if(item != request.block_site.obj) {
-              array_banned_blocks_sites.arr.push(item);                  
-            }
+              if (item != request.block_site.obj) {
+                array_banned_blocks_sites.arr.push(item);
+              }
             });
           }
         }
@@ -134,37 +126,32 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   }
 
   function save(all_url, arr) {
-    if(arr != 0) {
-    chrome.storage.local.set({
-      url_block: [...all_url, arr],
-    });       
-  } else {
-    chrome.storage.local.set({
-      url_block: [...all_url],
-    });
+    if (arr != 0) {
+      chrome.storage.local.set({
+        url_block: [...all_url, arr],
+      });
+    } else {
+      chrome.storage.local.set({
+        url_block: [...all_url],
+      });
+    }
   }
-  }
-
-  
 });
 
-
-
 function createStore(val, type) {
-  if(type == 'array') {
-    if(val == 'forbid') {
+  if (type == "array") {
+    if (val == "forbid") {
       chrome.storage.local.set({ forbid: [] });
     }
 
-    if(val == 'url_block') {
+    if (val == "url_block") {
       chrome.storage.local.set({ url_block: [] });
     }
   }
 
-  if(type == 'string') {
-    if(val == 'toogle_active_mode_status') {
-    chrome.storage.local.set({ toogle_active_mode_status: false });
+  if (type == "string") {
+    if (val == "toogle_active_mode_status") {
+      chrome.storage.local.set({ toogle_active_mode_status: false });
     }
   }
- 
 }
